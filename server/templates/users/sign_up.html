@@ -5,86 +5,74 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Demo</title>
+  <title>注册</title>
   <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
   <link href="{% static 'css/layui.css' %}" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 <style>
 .demo-reg-container{width: 320px; margin: 21px auto 0;}
 .demo-reg-other .layui-icon{position: relative; display: inline-block; margin: 0 2px; top: 2px; font-size: 26px;}
 </style>
-<form class="layui-form">
-  <div class="demo-reg-container">
-    <div class="layui-form-item">
-      <div class="layui-row">
-        <div class="layui-col-xs7">
-          <div class="layui-input-wrap">
-            <div class="layui-input-prefix">
-              <i class="layui-icon layui-icon-cellphone"></i>
-            </div>
-            <input type="text" name="cellphone" value="" lay-verify="required|phone" placeholder="手机号" lay-reqtext="请填写手机号" autocomplete="off" class="layui-input" id="reg-cellphone">
+<div style="margin-top: 15%;">
+  <form class="layui-form">
+    {% csrf_token %}
+    <div class="demo-reg-container">
+      <div class="layui-form-item">
+        <div class="layui-input-wrap">
+          <div class="layui-input-prefix">
+            <i class="layui-icon layui-icon-password"></i>
           </div>
+          <input type="password" name="password" value="" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input" id="reg-password" lay-affix="eye">
         </div>
-        <div class="layui-col-xs5">
-          <div style="margin-left: 11px;">
-            <button type="button" class="layui-btn layui-btn-fluid layui-btn-primary" lay-on="reg-get-vercode">获取验证码</button>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-wrap">
+          <div class="layui-input-prefix">
+            <i class="layui-icon layui-icon-password"></i>
           </div>
+          <input type="password" name="confirmPassword" value="" lay-verify="required|confirmPassword" placeholder="确认密码" autocomplete="off" class="layui-input" lay-affix="eye">
         </div>
       </div>
-    </div>
-    <div class="layui-form-item">
-      <div class="layui-input-wrap">
-        <div class="layui-input-prefix">
-          <i class="layui-icon layui-icon-vercode"></i>
+      <div class="layui-form-item">
+        <div class="layui-input-wrap">
+          <div class="layui-input-prefix">
+            <i class="layui-icon layui-icon-username"></i>
+          </div>
+          <input type="text" name="nickname" value="" lay-verify="required" placeholder="昵称" autocomplete="off" class="layui-input" lay-affix="clear">
         </div>
-        <input type="text" name="vercode" value="" lay-verify="required" placeholder="验证码" lay-reqtext="请填写验证码" autocomplete="off" class="layui-input">
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-input-wrap">
+          <div class="layui-input-prefix">
+            <i class="layui-icon layui-icon-email"></i>
+          </div>
+          <input type="text" name="email" value="" lay-verify="required|emailFunc" placeholder="邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <input type="checkbox" name="agreement" lay-verify="required" lay-skin="primary" title="同意"> 
+        <a href="#terms" target="_blank" style="position: relative; top: 6px; left: -15px;">
+          <ins>用户协议</ins>
+        </a>
+      </div>
+      <div class="layui-form-item">
+        <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="sign_up">注册</button>
+      </div>
+      <div class="layui-form-item demo-reg-other">
+        <label>社交账号注册</label>
+        <span style="padding: 0 21px 0 6px;">
+          <a href="javascript:;"><i class="layui-icon layui-icon-login-qq" style="color: #3492ed;"></i></a>
+          <a href="javascript:;"><i class="layui-icon layui-icon-login-wechat" style="color: #4daf29;"></i></a>
+          <a href="javascript:;"><i class="layui-icon layui-icon-login-weibo" style="color: #cf1900;"></i></a>
+        </span>
+        <a href="{% url 'sign_in' %}">登录已有帐号</a>
       </div>
     </div>
-    <div class="layui-form-item">
-      <div class="layui-input-wrap">
-        <div class="layui-input-prefix">
-          <i class="layui-icon layui-icon-password"></i>
-        </div>
-        <input type="password" name="password" value="" lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input" id="reg-password" lay-affix="eye">
-      </div>
-    </div>
-    <div class="layui-form-item">
-      <div class="layui-input-wrap">
-        <div class="layui-input-prefix">
-          <i class="layui-icon layui-icon-password"></i>
-        </div>
-        <input type="password" name="confirmPassword" value="" lay-verify="required|confirmPassword" placeholder="确认密码" autocomplete="off" class="layui-input" lay-affix="eye">
-      </div>
-    </div>
-    <div class="layui-form-item">
-      <div class="layui-input-wrap">
-        <div class="layui-input-prefix">
-          <i class="layui-icon layui-icon-username"></i>
-        </div>
-        <input type="text" name="nickname" value="" lay-verify="required" placeholder="昵称" autocomplete="off" class="layui-input" lay-affix="clear">
-      </div>
-    </div>
-    <div class="layui-form-item">
-      <input type="checkbox" name="agreement" lay-verify="required" lay-skin="primary" title="同意"> 
-      <a href="#terms" target="_blank" style="position: relative; top: 6px; left: -15px;">
-        <ins>用户协议</ins>
-      </a>
-    </div>
-    <div class="layui-form-item">
-      <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="demo-reg">注册</button>
-    </div>
-    <div class="layui-form-item demo-reg-other">
-      <label>社交账号注册</label>
-      <span style="padding: 0 21px 0 6px;">
-        <a href="javascript:;"><i class="layui-icon layui-icon-login-qq" style="color: #3492ed;"></i></a>
-        <a href="javascript:;"><i class="layui-icon layui-icon-login-wechat" style="color: #4daf29;"></i></a>
-        <a href="javascript:;"><i class="layui-icon layui-icon-login-weibo" style="color: #cf1900;"></i></a>
-      </span>
-      <a href="#login">登录已有帐号</a>
-    </div>
-  </div>
-</form>
+  </form>
+</div>
+
   
 <!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
 <script src="{% static 'layui.js' %}"></script> 
@@ -103,11 +91,17 @@ layui.use(function(){
       if(value !== passwordValue){
         return '两次密码输入不一致';
       }
-    }
+    },
+    emailFunc: function(value, item){
+      var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,6}$/;
+      if(!emailPattern.test(value)){
+        return '邮箱格式不正确';
+      }
+    },
   });
   
   // 提交事件
-  form.on('submit(demo-reg)', function(data){
+  form.on('submit(sign_up)', function(data){
     var field = data.field; // 获取表单字段值
     
     // 是否勾选同意
@@ -117,13 +111,43 @@ layui.use(function(){
     }
     
     // 显示填写结果，仅作演示用
-    layer.alert(JSON.stringify(field), {
-      title: '当前填写的字段值'
-    });
+    // layer.alert(JSON.stringify(field), {
+    //   title: '当前填写的字段值'
+    // });
     
     // 此处可执行 Ajax 等操作
     // …
-    
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+
+    axios.post(
+      "http://127.0.0.1:8000/users/signup/",
+      {
+        nickname:field.nickname,
+        password:field.password,
+        email:field.email,
+      },
+      {
+        // 关键配置：设置请求头，携带 CSRF 令牌
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'Content-Type': 'application/json' // 告诉后端数据格式是 JSON
+        }
+      }
+    ).then(function (response) {
+        console.log(response);
+        layer.msg(response.data['message'],{
+          icon: 1,
+          time: 1500 // 设置 1.5 秒后自动关闭
+        },function(){
+          if(response.data['code'] == 2001)
+          {
+            window.location.href = '/users/signin/'
+          }
+        });
+      }).catch(function (error) { // 增加错误捕获
+      console.log('用户注册请求失败：', error);
+      layer.msg('注册请求失败，请重试！');
+    });
     return false; // 阻止默认 form 跳转
   });
   
