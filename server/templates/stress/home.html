@@ -1,0 +1,10 @@
+{% extends 'stress/base.html' %}
+
+{% block content %}
+<fieldset class="layui-elem-field">
+    <legend>欢迎 {{ user.role }} {{ user.username }}</legend>
+    <div class="layui-field-box">
+      您有 {n} 个压力测试任务正在执行, {m} 个自动化测试任务正在执行
+    </div>
+</fieldset>
+{% endblock %}
