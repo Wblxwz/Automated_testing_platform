@@ -69,3 +69,7 @@ class SignInView(View):
         }
         json_response = json.dumps(response)
         return HttpResponse(json_response)
+
+class StressView(View):
+    def get(self,request):
+        return render(request,'stress/stress.html')

@@ -19,4 +19,5 @@ from . import views
 
 urlpatterns = [
     path('home/', views.StressHomeView.as_view(),name='home'),
+    path('logout/', views.log_out,name='logout'),
 ]

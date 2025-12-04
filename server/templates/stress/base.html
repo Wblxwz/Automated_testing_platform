@@ -23,7 +23,7 @@
         <dl class="layui-nav-child">
           <dd><a href="javascript:;">个人信息</a></dd>
           <dd><a href="javascript:;">设置</a></dd>
-          <dd><a href="javascript:;">登出</a></dd>
+          <dd><a href="{% url 'logout' %}">登出</a></dd>
         </dl>
       </li>
     </ul>
@@ -32,8 +32,11 @@
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <li class="layui-nav-item layui-this"><a href="javascript:;">概况</a></li>
         <li class="layui-nav-item"><a href="javascript:;">压力测试</a></li>
-        <li class="layui-nav-item"><a href="javascript:;">自动化测试</a></li>
+        <li class="layui-nav-item"><a href="javascript:;">接口测试</a></li>
+        <li class="layui-nav-item"><a href="javascript:;">性能测试</a></li>
+        <li class="layui-nav-item"><a href="javascript:;">Mock 数据构造</a></li>
       </ul>
     </div>
   </div>
