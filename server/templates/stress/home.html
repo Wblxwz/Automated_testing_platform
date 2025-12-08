@@ -4,7 +4,29 @@
 <fieldset class="layui-elem-field">
     <legend>欢迎 {{ user.role }} {{ user.username }}</legend>
     <div class="layui-field-box">
-      您有 {n} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
+      您共有 {{ project_count }} 个项目，{z} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
     </div>
 </fieldset>
+
+<table class="layui-table" lay-data="{height:315, url:'/static/json/2/table/user.json', page:true}" id="ID-table-demo-init">
+  <thead>
+    <tr>
+      <th lay-data="{field:'id', width:80, sort: true}">ID</th>
+      <th lay-data="{field:'username', width:80}">负责人</th>
+      <th lay-data="{field:'project_name', width:80}">项目名</th>
+      <th lay-data="{field:'create_time', sort: true}">创建时间</th>
+    </tr>
+  </thead>
+</table>
+
+{% endblock %}
+
+{% block js %}
+<script>
+function init()
+{
+  
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
 {% endblock %}

@@ -4,6 +4,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponse
 import logging
 import json
+from .models import *
 
 # Create your views here.
 
@@ -30,4 +31,14 @@ def log_out(request):
 
 class StressHomeView(View):
     def get(self,request):
-        return render(request,"stress/home.html")
+        curr_user = request.user
+        logger.info(f'{curr_user.username} in home')
+        project_count = Project.objects.filter(username=curr_user.username).count()
+        context = {
+            'project_count':project_count
+        }
+        return render(request,"stress/home.html",context)
+    
+class StressView(View):
+    def get(self,request):
+        return render(request,"stress/stress.html")

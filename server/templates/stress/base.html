@@ -9,6 +9,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="{% static 'css/layui.css' %}" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 {% if user.is_authenticated %}
@@ -32,8 +33,8 @@
     <div class="layui-side-scroll">
       <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
       <ul class="layui-nav layui-nav-tree" lay-filter="test">
-        <li class="layui-nav-item layui-this"><a href="javascript:;">概况</a></li>
-        <li class="layui-nav-item"><a href="javascript:;">压力测试</a></li>
+        <li class="layui-nav-item {% if request.path == '/stress/home/' %} layui-this {% endif %}"><a href="/stress/home">概况</a></li>
+        <li class="layui-nav-item {% if request.path == '/stress/stress/' %} layui-this {% endif %}"><a href="/stress/stress">压力测试</a></li>
         <li class="layui-nav-item"><a href="javascript:;">接口测试</a></li>
         <li class="layui-nav-item"><a href="javascript:;">性能测试</a></li>
         <li class="layui-nav-item"><a href="javascript:;">Mock 数据构造</a></li>
@@ -78,6 +79,8 @@ layui.use(['element', 'layer', 'util'], function(){
   });
 });
 </script>
+{% block js %}
+{% endblock %}
 {% endif %}
 </body>
 </html>
