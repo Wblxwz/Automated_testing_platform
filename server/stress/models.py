@@ -5,7 +5,7 @@ from django.db import models
 class Project(models.Model):
     username = models.CharField(max_length=150)
     project_name = models.CharField(max_length=200)
-    create_time = models.DateField(auto_now_add=True)
+    create_time = models.DateTimeField(auto_now_add=True)
 
 class Stress(models.Model):
     project_id = models.IntegerField()

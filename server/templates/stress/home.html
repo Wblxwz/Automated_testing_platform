@@ -4,16 +4,20 @@
 <fieldset class="layui-elem-field">
     <legend>欢迎 {{ user.role }} {{ user.username }}</legend>
     <div class="layui-field-box">
-      您共有 {{ project_count }} 个项目，{z} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
+      您共有 <span id="projectCount">{{ project_count }}</span> 个项目，{z} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
     </div>
 </fieldset>
 
-<table class="layui-table" lay-data="{height:315, url:'/static/json/2/table/user.json', page:true}" id="ID-table-demo-init">
+
+<div style="margin-left: 1%;" class="layui-btn-container">
+  <button lay-on="addProject" type="button" class="layui-btn layui-btn-radius">添加项目</button>
+</div>
+<table class="layui-table" lay-data="{height:700, url:'http://127.0.0.1:8000/stress/home/', page:true}" id="project_table">
   <thead>
     <tr>
-      <th lay-data="{field:'id', width:80, sort: true}">ID</th>
-      <th lay-data="{field:'username', width:80}">负责人</th>
-      <th lay-data="{field:'project_name', width:80}">项目名</th>
+      <th lay-data="{type:'numbers',field:'id', width:80}">序号</th>
+      <th lay-data="{field:'username', width:300}">负责人</th>
+      <th lay-data="{field:'project_name', width:300, sort: true}">项目名</th>
       <th lay-data="{field:'create_time', sort: true}">创建时间</th>
     </tr>
   </thead>
@@ -23,10 +27,85 @@
 
 {% block js %}
 <script>
-function init()
-{
-  
-}
-document.addEventListener('DOMContentLoaded', init);
+layui.use(function(){
+  var $ = layui.$;
+  var layer = layui.layer;
+  var util = layui.util;
+  var form = layui.form;
+  var table = layui.table;
+  // 事件
+  util.on('lay-on', {
+    'addProject': function(){
+      var index1 = layer.open({
+        type: 1,
+        area: '350px',
+        resize: false,
+        shadeClose: true,
+        title: '添加项目',
+        content: `
+          <form class="layui-form" style="margin: 16px;" action="">
+            {% csrf_token %}
+            <div class="layui-form-item">
+              <label style="display: inline-block; text-align: left;" class="layui-form-label">项目名称</label>
+              <div class="layui-input-block">
+                 <input type="text" name="project_name" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="createProject">创建</button>
+            </div>
+          </form>
+        `,
+        success: function(){
+          // 对弹层中的表单进行初始化渲染
+          form.render();
+          // 表单提交事件
+          form.on('submit(createProject)', function(data){
+            var project_name = data.field['project_name']; // 获取表单字段值
+            var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+            // 显示填写结果，仅作演示用
+            console.log(project_name)
+            // 此处可执行 Ajax 等操作
+            axios.post('http://127.0.0.1:8000/stress/home/', 
+              {
+                'project_name':project_name
+              },
+              {
+              // 关键配置：设置请求头，携带 CSRF 令牌
+              headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json' // 告诉后端数据格式是 JSON
+              }
+              }
+            )
+            .then(function (response) {
+              console.log(response);
+              layer.close(index1);
+              layer.msg(response.data['message']);
+              axios.get('http://127.0.0.1:8000/stress/projects_count')
+              .then(function (response) {
+                // 处理成功情况
+                document.getElementById('projectCount').innerText = response.data['count'];
+              })
+              .catch(function (error) {
+                // 处理错误情况
+                console.log(error);
+              })
+              table.reload('project_table', {
+                where: { // 传递数据异步请求时携带的字段
+                },
+                page: {curr: 1}
+              });
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+            return false; // 阻止默认 form 跳转
+          });
+        }
+      });
+    }
+  })
+});
 </script>
 {% endblock %}

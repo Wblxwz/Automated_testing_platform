@@ -21,4 +21,5 @@ urlpatterns = [
     path('home/', views.StressHomeView.as_view(),name='home'),
     path('logout/', views.log_out,name='logout'),
     path('stress/',views.StressView.as_view(),name='stress'),
+    path('projects_count/',views.project_count,name='projects_count'),
 ]
