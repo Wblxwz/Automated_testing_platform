@@ -1,24 +1,20 @@
 {% extends 'stress/base.html' %}
 
 {% block content %}
-<fieldset class="layui-elem-field">
-    <legend>欢迎 {{ user.role }} {{ user.username }}</legend>
-    <div class="layui-field-box">
-      您共有 <span id="projectCount">{{ project_count }}</span> 个项目，{z} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
-    </div>
-</fieldset>
-
 
 <div style="margin-left: 1%;" class="layui-btn-container">
   <button lay-on="addProject" type="button" class="layui-btn layui-btn-radius">添加项目</button>
 </div>
-<table class="layui-table" lay-data="{height:700, url:'http://127.0.0.1:8000/stress/home/', page:true}" id="project_table">
+{% csrf_token %}
+<table class="layui-table" lay-data="{height:700, url:'http://127.0.0.1:8000/stress/home/', page:true}" id="project_table" lay-filter="projectFilter">
   <thead>
     <tr>
+      <th lay-data="{field:'id', width:80,hide:true}">id</th>
       <th lay-data="{type:'numbers',field:'id', width:80}">序号</th>
       <th lay-data="{field:'username', width:300}">负责人</th>
       <th lay-data="{field:'project_name', width:300, sort: true}">项目名</th>
       <th lay-data="{field:'create_time', sort: true}">创建时间</th>
+      <th lay-data="{fixed: 'right', align: 'center', toolbar: '#templet-demo-theads-tool'}" rowspan="3">操作</th>
     </tr>
   </thead>
 </table>
@@ -33,6 +29,58 @@ layui.use(function(){
   var util = layui.util;
   var form = layui.form;
   var table = layui.table;
+
+  table.on('tool(projectFilter)', function(obj){
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    var data = obj.data; // 获取当前行数据（包含id、project_name等）
+    if(obj.event === 'del'){
+      // 弹出确认框
+      var index1 = layer.confirm('确定删除【'+ data.project_name +'】这个项目吗？', {
+        icon: 3,
+        title: '删除确认'
+      }, function(index){
+        // 调用删除接口（替换为你的真实删除接口）
+        axios.delete('http://127.0.0.1:8000/stress/home/delete/' + data.id,
+          {
+            headers: {
+                'X-CSRFToken': csrfToken,
+              }
+          }
+        )
+        .then(function (response) {
+          // 处理成功情况
+          layer.close(index1);
+          layer.msg(response.data['message']);
+          console.log(response);
+          axios.get('http://127.0.0.1:8000/stress/projects_count')
+              .then(function (response) {
+                // 处理成功情况
+                document.getElementById('projectCount').innerText = response.data['count'];
+              })
+              .catch(function (error) {
+                // 处理错误情况
+                layer.msg(response.data['message']);
+                console.log(error);
+              })
+              table.reload('project_table', {
+                where: { // 传递数据异步请求时携带的字段
+                },
+                page: {curr: 1}
+              });
+        })
+        .catch(function (error) {
+          // 处理错误情况
+          layer.close(index1);
+          layer.msg(response.data['message']);
+          console.log(error);
+        })
+      });
+    }
+    else if(obj.event === 'enter')
+    {
+      window.location.href = '/stress/project/' + data.id;
+    }
+  });
   // 事件
   util.on('lay-on', {
     'addProject': function(){
@@ -89,6 +137,7 @@ layui.use(function(){
               })
               .catch(function (error) {
                 // 处理错误情况
+                layer.msg(response.data['message']);
                 console.log(error);
               })
               table.reload('project_table', {
@@ -107,5 +156,11 @@ layui.use(function(){
     }
   })
 });
+</script>
+<script type="text/html" id="templet-demo-theads-tool">
+  <div class="layui-clear-space">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="enter">进入</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="del">删除</a>
+  </div>
 </script>
 {% endblock %}

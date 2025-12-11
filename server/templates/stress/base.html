@@ -42,6 +42,12 @@
     </div>
   </div>
   <div class="layui-body">
+    <fieldset class="layui-elem-field">
+      <legend>欢迎 {{ user.role }} {{ user.username }}</legend>
+      <div class="layui-field-box">
+        您共有 <span id="projectCount">{{ project_count }}</span> 个项目，{z} 个压力测试任务正在执行, {m} 个性能测试任务正在执行
+      </div>
+  </fieldset>
     {% block content %}{% endblock %}
   </div>
   <div class="layui-footer">

@@ -94,7 +94,40 @@ class StressHomeView(View):
         json_data = json.dumps(return_data)
         logger.info(f'{curr_user.username} 创建新项目 {data['project_name']}')
         return HttpResponse(json_data)
-    
+    def delete(self,request,id):
+        curr_user = request.user
+        logger.info(f'{curr_user.username} 删除项目 {id}')
+        code = 2004
+        message = f'删除项目成功'
+        try:
+            count = Project.objects.filter(id=id).delete()
+            if count == 0:
+                code = 5004
+                message = f'删除项目失败'
+        except Exception as e:
+            logger.error(e)
+        data = {
+            'code':code,
+            'message':message
+        }
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
 class StressView(View):
     def get(self,request):
         return render(request,"stress/stress.html")
+    
+class StressProjectView(View):
+    def get(self,request,id):
+        curr_user = request.user
+        logger.info(f'{curr_user.username} 进入项目 {id}')
+        try:
+            project = Project.objects.filter(id=id).get()
+            if project is None:
+                logger.error(f'{curr_user.username} 进入项目失败 {id}')
+        except Exception as e:
+            logger.error(e)
+        context = {
+            'project_name':project.project_name,
+        }
+        return render(request,"stress/project.html",context)
